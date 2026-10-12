@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Breast Cancer ML Pipeline: Feast + MLflow + Model Registry</title>
+<style>
+:root{--bg:#fbf7f4;--ink:#2a1f24;--muted:#6f5f66;--accent:#a3194f;--card:#fff;--line:#e8dde1}
+@media(prefers-color-scheme:dark){:root{--bg:#1b1418;--ink:#f3e9ed;--muted:#b3a1a9;--accent:#ff7aa8;--card:#261c21;--line:#3a2c33}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Georgia,"Times New Roman",serif}
+main{max-width:880px;margin:0 auto;padding:48px 20px}
+h1{font-size:2.2rem;line-height:1.15;margin:0 0 8px}h1 span{color:var(--accent)}
+h2{margin:40px 0 12px;font-size:1.3rem;border-bottom:2px solid var(--accent);padding-bottom:4px}
+p.lead{color:var(--muted);margin:0}
+.badge{display:inline-block;background:var(--accent);color:#fff;border-radius:999px;padding:2px 12px;font:600 .8rem system-ui,sans-serif;margin-right:6px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.card b{display:block;font:600 .75rem system-ui,sans-serif;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.card span{font-size:1.5rem}
+.wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;background:var(--card)}
+th,td{padding:9px 12px;border:1px solid var(--line);text-align:left;font-size:.95rem}th{background:var(--accent);color:#fff;font-family:system-ui,sans-serif}
+tr.best td{font-weight:700;background:color-mix(in srgb,var(--accent) 12%,var(--card))}
+code{background:var(--card);border:1px solid var(--line);padding:1px 6px;border-radius:4px;font-size:.9em}
+footer{margin-top:48px;color:var(--muted);font-size:.85rem}
+</style>
+</head>
+<body>
+<main>
+<h1>Breast Cancer <span>Classification Pipeline</span></h1>
+<p class="lead">Feature serving with Feast &middot; experiment tracking with MLflow &middot; versioning with the MLflow Model Registry</p>
+<p><span class="badge">CI/CD</span><span class="badge">6 models</span><span class="badge">Registry v1 &amp; v2</span></p>
+
+<h2>Summary</h2>
+<div class="grid">
+<div class="card"><b>Dataset</b><span>569 samples</span></div>
+<div class="card"><b>Features used</b><span>5</span></div>
+<div class="card"><b>Best model</b><span>K-Nearest Neighbors</span></div>
+<div class="card"><b>Best accuracy</b><span>95.61%</span></div>
+</div>
+
+<h2>Selected features</h2>
+<p>The 5 features with the highest absolute correlation with the diagnosis target:</p>
+<ul><li>worst concave points</li><li>worst perimeter</li><li>mean concave points</li><li>worst radius</li><li>mean perimeter</li></ul>
+
+<h2>Model comparison</h2>
+<div class="wrap"><table>
+<tr><th>Model</th><th>Accuracy</th><th>Precision</th><th>Recall</th><th>F1</th></tr>
+<tr class="best"><td>K-Nearest Neighbors</td><td>0.9561</td><td>0.9565</td><td>0.9561</td><td>0.9562</td></tr><tr><td>Logistic Regression</td><td>0.9386</td><td>0.9408</td><td>0.9386</td><td>0.9390</td></tr><tr><td>Support Vector Machine</td><td>0.9386</td><td>0.9408</td><td>0.9386</td><td>0.9390</td></tr><tr><td>Random Forest</td><td>0.9386</td><td>0.9390</td><td>0.9386</td><td>0.9387</td></tr><tr><td>Gradient Boosting</td><td>0.9298</td><td>0.9311</td><td>0.9298</td><td>0.9301</td></tr><tr><td>Decision Tree</td><td>0.8947</td><td>0.9022</td><td>0.8947</td><td>0.8960</td></tr>
+</table></div>
+
+<h2>Model Registry</h2>
+<div class="wrap"><table>
+<tr><th>Version</th><th>Model</th><th>Hyperparameter</th><th>Accuracy</th><th>F1</th></tr>
+<tr><td>1</td><td>K-Nearest Neighbors</td><td>n_neighbors = 5</td><td>0.9561</td><td>0.9562</td></tr>
+<tr><td>2</td><td>K-Nearest Neighbors</td><td>n_neighbors = 7</td><td>0.9474</td><td>0.9474</td></tr>
+</table></div>
+<p>Registered as <code>Breast_Cancer_Best_Model</code>. Changed hyperparameter: <code>n_neighbors: 5 -> 7</code>.</p>
+
+<h2>Pipeline</h2>
+<ol>
+<li>Load and preprocess the data, then select the top features.</li>
+<li>Serve features through a Feast feature store (entity <code>patient_id</code>, view <code>patient_features</code>).</li>
+<li>Train six models and log one MLflow run each (parameters and metrics).</li>
+<li>Register the best model as Version 1, change one hyperparameter, retrain, register Version 2.</li>
+<li>GitHub Actions runs <code>pytest</code> and the training script on every push.</li>
+</ol>
+
+<footer>Source: <code>train_model.py</code>, <code>test_model.py</code>, <code>.github/workflows/cicd.yml</code></footer>
+</main>
+</body>
+</html>
